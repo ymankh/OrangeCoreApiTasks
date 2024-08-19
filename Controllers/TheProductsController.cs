@@ -17,7 +17,7 @@ namespace OrangeCoreApiTasks.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            var products = _db.Products.ToList();
+            var products = _db.Products.Include(p => p.Category).ToList();
             return Ok(products);
         }
         [HttpGet("{id}")]

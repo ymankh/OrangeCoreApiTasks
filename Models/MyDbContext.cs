@@ -44,10 +44,10 @@ public partial class MyDbContext : DbContext
             entity.Property(e => e.ProductImage).HasMaxLength(255);
             entity.Property(e => e.ProductName).HasMaxLength(100);
 
-            entity.HasOne(d => d.Category).WithMany(p => p.Products)
-                .HasForeignKey(d => d.CategoryId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Products_Categories");
+            //entity.HasOne(d => d.Category).WithMany(p => p.Products)
+            //    .HasForeignKey(d => d.CategoryId)
+            //    .OnDelete(DeleteBehavior.ClientSetNull)
+            //    .HasConstraintName("FK_Products_Categories");
         });
 
         OnModelCreatingPartial(modelBuilder);
