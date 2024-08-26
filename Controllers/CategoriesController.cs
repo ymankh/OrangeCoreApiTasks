@@ -25,12 +25,20 @@ namespace OrangeCoreApiTasks.Controllers
         {
             return Ok(_context.Categories.ToList());
         }
-        [HttpGet("{id:int:min(5)}")]
+        [HttpGet("{id:int}")]
         public IActionResult Get(int id)
         {
             var category = _context.Categories.Find(id);
             if (category == null) return NotFound($"We couldn't find a category with the id {id}");
             return Ok(category);
+        }
+        [HttpGet("{id:int}/products")]
+        public IActionResult GetProducts(int id)
+        {
+            var category = _context.Categories.Find(id);
+            if (category == null) return NotFound($"We couldn't find a category with the id {id}");
+
+            return Ok(_context.Products.Where(p => p.CategoryId == id).ToList());
         }
 
         [HttpGet("{name}")]
