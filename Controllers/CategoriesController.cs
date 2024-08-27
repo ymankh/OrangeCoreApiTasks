@@ -1,53 +1,71 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using OrangeCoreApiTasks.DTOs;
 using OrangeCoreApiTasks.Models;
+using static OrangeCoreApiTasks.Shared.Shared;
 
 namespace OrangeCoreApiTasks.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CategoriesController : ControllerBase
+    public class CategoriesController(MyDbContext context) : ControllerBase
     {
-        private readonly MyDbContext _context;
-
-        public CategoriesController(MyDbContext context)
-        {
-            _context = context;
-        }
-
         [HttpGet]
         public IActionResult Get()
         {
-            return Ok(_context.Categories.ToList());
+            return Ok(context.Categories.ToList());
         }
+
+        [HttpPost]
+        public IActionResult Create(CategoryDto category)
+        {
+            var newCategory = new Category
+            {
+                CategoryName = category.CategoryName,
+                CategoryImage = SaveImage(category.CategoryImage)
+            };
+            context.Categories.Add(newCategory);
+            return Ok(newCategory);
+        }
+        [HttpPut("{id:int}")]
+        public IActionResult Update(int id, CategoryDto category)
+        {
+            var oldCategory = context.Categories.Find(id);
+
+            if (oldCategory == null)
+                return NotFound();
+            oldCategory.CategoryName = category.CategoryName;
+            oldCategory.CategoryImage = SaveImage(category.CategoryImage);
+
+            context.Categories.Update(oldCategory);
+            return Ok(oldCategory);
+        }
+
         [HttpGet("{id:int}")]
         public IActionResult Get(int id)
         {
-            var category = _context.Categories.Find(id);
+            var category = context.Categories.Find(id);
             if (category == null) return NotFound($"We couldn't find a category with the id {id}");
             return Ok(category);
         }
+
         [HttpGet("{id:int}/products")]
         public IActionResult GetProducts(int id)
         {
-            var category = _context.Categories.Find(id);
+            var category = context.Categories.Find(id);
             if (category == null) return NotFound($"We couldn't find a category with the id {id}");
 
-            return Ok(_context.Products.Where(p => p.CategoryId == id).ToList());
+            return Ok(context.Products.Where(p => p.CategoryId == id).ToList());
         }
 
         [HttpGet("{name}")]
         public IActionResult Get(string name)
         {
-            var category = _context.Categories.FirstOrDefault(c => c.CategoryName == name);
+            var category = context.Categories.FirstOrDefault(c => c.CategoryName == name);
             if (category == null) return NotFound($"We couldn't find a category with the name {name}");
             return Ok(category);
         }
+
+
 
     }
 }
