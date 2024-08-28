@@ -18,11 +18,7 @@ namespace OrangeCoreApiTasks.Controllers
         [HttpPost]
         public IActionResult Create([FromForm] CategoryDto category)
         {
-            var newCategory = new Category
-            {
-                CategoryName = category.CategoryName,
-                CategoryImage = SaveImage(category.CategoryImage)
-            };
+            Category newCategory = category;
             context.Categories.Add(newCategory);
             context.SaveChanges();
             return Ok(newCategory);

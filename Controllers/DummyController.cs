@@ -44,5 +44,19 @@ namespace OrangeCoreApiTasks.Controllers
             return BadRequest();
 
         }
+
+        [HttpGet("30problem")]
+        public IActionResult Calculate(decimal first, decimal second)
+        {
+            if (first + second == 30 || first == 30 || second == 30)
+                return Ok("The sum or one of the two numbers are 30");
+            return Ok("neither of the two number nor the sum of them is 30.");
+
+        }
+        [HttpGet("dividableBy7or3")]
+        public IActionResult DividableBy7Or3(decimal number)
+        {
+            return Ok(number > 0 && (number % 3 == 0 || number % 7 == 0));
+        }
     }
 }

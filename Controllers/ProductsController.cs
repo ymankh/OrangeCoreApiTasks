@@ -23,15 +23,7 @@ namespace OrangeCoreApiTasks.Controllers
         [HttpPost]
         public IActionResult Create([FromForm] ProductDto product)
         {
-            var imagePath = SaveImage(product.ProductImage);
-            var newProduct = new Product
-            {
-                ProductName = product.ProductName,
-                ProductImage = imagePath,
-                CategoryId = product.CategoryId,
-                Price = product.Price,
-                Description = product.Description
-            };
+            Product newProduct = product;
             context.Products.Add(newProduct);
             context.SaveChanges();
 
@@ -41,21 +33,16 @@ namespace OrangeCoreApiTasks.Controllers
         [HttpPut("{id:int}")]
         public IActionResult Put(int id, [FromForm] ProductDto product)
         {
-            var imagePath = SaveImage(product.ProductImage);
-            var oldProduct = context.Products.Find(id);
-            if (oldProduct == null)
+            if (!context.Products.Any(p => p.ProductId == id))
                 return NotFound();
-            oldProduct.ProductName = product.ProductName;
-            oldProduct.ProductImage = imagePath;
-            oldProduct.CategoryId = product.CategoryId;
-            oldProduct.Price = product.Price;
-            oldProduct.Description = product.Description;
 
+            Product updatedProduct = product;
+            updatedProduct.ProductId = id;
 
-            context.Products.Update(oldProduct);
+            context.Products.Update(updatedProduct);
             context.SaveChanges();
 
-            return Ok(oldProduct);
+            return Ok(updatedProduct);
         }
 
         [HttpGet("{id:int}")]

@@ -1,4 +1,6 @@
 ﻿using OrangeCoreApiTasks.Models;
+using static OrangeCoreApiTasks.Shared.Shared;
+
 
 namespace OrangeCoreApiTasks.DTOs
 {
@@ -13,5 +15,18 @@ namespace OrangeCoreApiTasks.DTOs
         public int CategoryId { get; set; }
 
         public IFormFile? ProductImage { get; set; }
+
+        public static implicit operator Product(ProductDto product)
+        {
+            return new Product
+            {
+                ProductName = product.ProductName,
+                ProductImage = SaveImage(product.ProductImage),
+                CategoryId = product.CategoryId,
+                Price = product.Price,
+                Description = product.Description
+            };
+        }
+
     }
 }
