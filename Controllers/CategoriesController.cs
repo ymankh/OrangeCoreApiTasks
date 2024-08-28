@@ -16,7 +16,7 @@ namespace OrangeCoreApiTasks.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(CategoryDto category)
+        public IActionResult Create([FromForm] CategoryDto category)
         {
             var newCategory = new Category
             {
@@ -24,10 +24,12 @@ namespace OrangeCoreApiTasks.Controllers
                 CategoryImage = SaveImage(category.CategoryImage)
             };
             context.Categories.Add(newCategory);
+            context.SaveChanges();
             return Ok(newCategory);
         }
+
         [HttpPut("{id:int}")]
-        public IActionResult Update(int id, CategoryDto category)
+        public IActionResult Update(int id, [FromForm] CategoryDto category)
         {
             var oldCategory = context.Categories.Find(id);
 
@@ -64,8 +66,5 @@ namespace OrangeCoreApiTasks.Controllers
             if (category == null) return NotFound($"We couldn't find a category with the name {name}");
             return Ok(category);
         }
-
-
-
     }
 }

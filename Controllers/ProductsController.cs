@@ -86,6 +86,8 @@ namespace OrangeCoreApiTasks.Controllers
             context.SaveChanges();
             return NoContent();
         }
+
+
         private bool ProductExists(int id)
         {
             return context.Products.Any(e => e.ProductId == id);

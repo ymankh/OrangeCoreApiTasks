@@ -1,5 +1,6 @@
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using OrangeCoreApiTasks.Models;
 
 namespace OrangeCoreApiTasks
@@ -42,9 +43,18 @@ namespace OrangeCoreApiTasks
             }
 
             app.UseHttpsRedirection();
+            app.UseStaticFiles(); // Serves static files from the wwwroot folder by default
+            // Serve files from the Media folder
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(
+                    Path.Combine(builder.Environment.ContentRootPath, "images")),
+                RequestPath = "/images"
+            });
 
             // Use CORS with the specified policy
             app.UseCors("AllowAll");
+            app.UseRouting();
 
             app.UseAuthorization();
 
