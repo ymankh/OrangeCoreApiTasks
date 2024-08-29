@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using OrangeCoreApiTasks.DTOs;
 using OrangeCoreApiTasks.Models;
-using static OrangeCoreApiTasks.Shared.Shared;
 
 namespace OrangeCoreApiTasks.Controllers
 {
