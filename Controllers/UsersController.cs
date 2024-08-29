@@ -8,9 +8,9 @@ namespace OrangeCoreApiTasks.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private orders _db;
+        private MyDbContext _db;
 
-        public UsersController(orders db)
+        public UsersController(MyDbContext db)
         {
             _db = db;
         }

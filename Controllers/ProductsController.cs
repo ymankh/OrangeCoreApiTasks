@@ -6,9 +6,8 @@ namespace OrangeCoreApiTasks.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ProductsController(MyDbContext context, IWebHostEnvironment env) : ControllerBase
+    public class ProductsController(MyDbContext context) : ControllerBase
     {
-        private readonly IWebHostEnvironment _env = env;
 
         [HttpGet]
         public IActionResult Get(string? sortField, string? sortOrder)
@@ -20,7 +19,7 @@ namespace OrangeCoreApiTasks.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create([FromForm] ProductDto product)
+        public IActionResult Create(ProductDto product)
         {
             Product newProduct = product;
             context.Products.Add(newProduct);
@@ -32,7 +31,7 @@ namespace OrangeCoreApiTasks.Controllers
         [HttpPut("{id:int}")]
         public IActionResult Put(int id, [FromForm] ProductDto product)
         {
-            if (!context.Products.Any(p => p.ProductId == id))
+            if (!ProductExists(id))
                 return NotFound();
 
             Product updatedProduct = product;

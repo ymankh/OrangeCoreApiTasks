@@ -5,9 +5,9 @@ namespace OrangeCoreApiTasks.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class OrdersController(orders db) : ControllerBase
+    public class OrdersController(MyDbContext db) : ControllerBase
     {
-        private orders _db = db;
+        private MyDbContext _db = db;
 
         [HttpGet]
         public IActionResult Get()
