@@ -8,7 +8,10 @@ namespace OrangeCoreApiTasks.Controllers
     [ApiController]
     public class ProductsController(MyDbContext context) : ControllerBase
     {
-
+        /// <summary>
+        /// Retrieves a list of all Products.
+        /// </summary>
+        /// <returns>A list of users.</returns>
         [HttpGet]
         public IActionResult Get(string? sortField, string? sortOrder)
         {

@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using OrangeCoreApiTasks.Models;
 
 namespace OrangeCoreApiTasks.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class DummyController : ControllerBase
+    public class DummyController(MyDbContext context) : ControllerBase
     {
         [HttpGet("{equation}")]
         public IActionResult Calculate(string equation)
@@ -57,6 +58,14 @@ namespace OrangeCoreApiTasks.Controllers
         public IActionResult DividableBy7Or3(decimal number)
         {
             return Ok(number > 0 && (number % 3 == 0 || number % 7 == 0));
+        }
+
+        [HttpGet("getProducts")]
+        public IActionResult ProductsTask()
+        {
+            var orders = context.Products.OrderByDescending(p => p.ProductName).Take(5).Reverse();
+
+            return Ok(orders.ToList());
         }
     }
 }

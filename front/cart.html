@@ -9,12 +9,7 @@
       content="Mark Otto, Jacob Thornton, and Bootstrap contributors"
     />
     <meta name="generator" content="Hugo 0.84.0" />
-    <title>Sidebars · Bootstrap v5.0</title>
-
-    <link
-      rel="canonical"
-      href="https://getbootstrap.com/docs/5.0/examples/sidebars/"
-    />
+    <title>Cart Page</title>
 
     <!----------------------- IziToast ----------------------->
     <link
@@ -52,7 +47,7 @@
     </style>
 
     <!-- Custom styles for this template -->
-    <link href="sidebars.css" rel="stylesheet" />
+    <!-- <link href="sidebars.css" rel="stylesheet" /> -->
   </head>
   <body>
     <div class="flex-grow-1">
@@ -71,6 +66,7 @@
               <th scope="col">Price</th>
               <th scope="col">Img</th>
               <th scope="col">quantity</th>
+              <th></th>
             </tr>
           </thead>
           <tbody id="products"></tbody>
@@ -78,13 +74,13 @@
       </main>
     </div>
 
-    <script
+    <!-- <script
       src="/docs/5.0/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
       crossorigin="anonymous"
-    ></script>
+    ></script> -->
 
-    <script src="sidebars.js"></script>
+    <!-- <script src="sidebars.js"></script> -->
     <script>
       updateUi();
       async function updateUi() {
@@ -101,18 +97,20 @@
           cartItems.forEach((cartItem) => {
             i++;
             let row = document.createElement("tr");
+            row.id = "cartItemRow" + cartItem.cartItemId;
             row.innerHTML = `
         <th>${i}</th>
         <td>${cartItem.productName}</td>
         <td>${cartItem.price}</td>
         <td><img src="https://localhost:7215/${cartItem.productImage}" alt="${cartItem.productName}" width="100" height="100"></td>
         <td>
-            <div class="btn-group input-group">
+            <div class="btn-group input-group" id="cartItem${cartItem.cartItemId}">
                 <input class="btn btn-danger" type="button" onClick="decrementFromCart(${cartItem.cartItemId}); updateUi()" value="-">
-                <input class="form-control" disabled value="${cartItem.quantity}">
+                <input class="form-control" type="number" id="cartItemValue${cartItem.cartItemId}" value="${cartItem.quantity}" onChange="UpdateCartItem(event, ${cartItem.cartItemId})">
                 <input class="btn btn-primary" type="button" onClick="addToCart(${cartItem.productId}); updateUi();" value="+">
             </div>
         </td>
+        <td><button class="btn btn-danger" onClick="deleteCartItem(event, ${cartItem.cartItemId})">Remove</button></td>
         `;
             productsTable.appendChild(row);
           });
@@ -120,6 +118,28 @@
       }
     </script>
     <script>
+      async function UpdateCartItem(event, cartItemId) {
+        let data = { quantity: event.target.value };
+        let apiEndpoint = `https://localhost:7215/api/CartItems/${cartItemId}`;
+        const response = await fetch(apiEndpoint, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
+        if (response.ok) {
+          iziToast.success({
+            title: "Cart Item Updated",
+            message: "Item quantity updated successfully!",
+          });
+        } else {
+          iziToast.error({
+            title: "Error",
+            message: "Something went wrong!",
+          });
+        }
+      }
       async function addToCart(productId) {
         console.log("The product id is " + productId);
 
@@ -142,6 +162,7 @@
             title: "Add to cart",
             message: "Successfully to the cart!",
           });
+          updateUi();
         } else {
           iziToast.error({
             title: "Error",
@@ -163,9 +184,27 @@
 
         if (response.ok) {
           iziToast.success({
-            title: "Add to cart",
-            message: "Successfully to the cart!",
+            title: "Decremented from cart",
+            message: "Successfully decremented from the cart!",
           });
+        } else {
+          iziToast.error({
+            title: "Error",
+            message: "Something went wrong!",
+          });
+        }
+      }
+      async function deleteCartItem(event, cartItemId) {
+        let apiEndpoint = `https://localhost:7215/api/CartItems/${cartItemId}`;
+        const response = await fetch(apiEndpoint, {
+          method: "delete",
+        });
+        if (response.ok) {
+          iziToast.success({
+            title: "Cart Item Deleted",
+            message: "Item Has been deleted From Cart!",
+          });
+          document.getElementById("cartItemRow" + cartItemId).remove();
         } else {
           iziToast.error({
             title: "Error",

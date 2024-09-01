@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using Microsoft.EntityFrameworkCore;
 using OrangeCoreApiTasks.DTOs;
 using OrangeCoreApiTasks.Models;
@@ -45,32 +46,17 @@ namespace OrangeCoreApiTasks.Controllers
         // PUT: api/CartItems/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCartItem(int id, CartItem cartItem)
+        public async Task<IActionResult> PutCartItem(int id, [FromBody] EditCartItemDto cartItem)
         {
-            if (id != cartItem.CartItemId)
+            if (cartItem.Quantity < 0)
+                return BadRequest("quantity should be a positive integer.");
+            var updatedCartItem = await cartItem.UpdateItem(id, _context);
+            if (cartItem.Quantity == 0)
             {
-                return BadRequest();
+                return NoContent();
             }
 
-            _context.Entry(cartItem).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CartItemExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            return Ok(updatedCartItem);
         }
 
         // POST: api/CartItems
