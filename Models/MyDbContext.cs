@@ -110,7 +110,6 @@ public partial class MyDbContext : DbContext
             entity.Property(e => e.Email)
                 .HasMaxLength(20)
                 .IsUnicode(false);
-            entity.Property(e => e.Password).HasMaxLength(255);
             entity.Property(e => e.UserName)
                 .HasMaxLength(50)
                 .HasColumnName("userName");
