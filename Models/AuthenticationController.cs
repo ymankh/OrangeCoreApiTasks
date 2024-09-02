@@ -23,5 +23,15 @@ namespace OrangeCoreApiTasks.Models
                 return NotFound();
             return Ok(user);
         }
+        [HttpPost("getUserByUsername")]
+        public IActionResult GetByUserName([FromForm] string userName)
+        {
+            var user = context.Users.FirstOrDefault(u => u.UserName == userName);
+            if (user == null)
+            {
+                return NotFound($"No user with the username {userName}");
+            }
+            return Ok(user);
+        }
     }
 }
