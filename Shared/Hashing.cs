@@ -3,22 +3,24 @@ using System.Text;
 
 namespace OrangeCoreApiTasks.Shared
 {
-    public class Hashing
+    public static class PasswordHasher
     {
-        public static string ComputeSha256Hash(string rawData)
+        public static (byte[], byte[]) CreatePasswordHash(string password)
         {
-            // Create a SHA256 object
-            using var sha256Hash = SHA512.Create();
-            // ComputeHash - returns byte array
-            var bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));
+            //var hmac = new System.Security.Cryptography.HMACSHA256()
+            using var hmac = new System.Security.Cryptography.HMACSHA512();
+            var passwordSalt = hmac.Key; // The Key property provides a randomly generated salt.
+            var passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+            return (passwordHash, passwordSalt);
+        }
 
-            // Convert byte array to a string
-            var builder = new StringBuilder();
-            foreach (var bt in bytes)
-            {
-                builder.Append(bt.ToString("x2"));
-            }
-            return builder.ToString();
+        public static bool VerifyPasswordHash(string password, byte[] storedHash, byte[] storedSalt)
+        {
+            //var hmac = new System.Security.Cryptography.HMACSHA256(storedSalt)
+            using var hmac = new System.Security.Cryptography.HMACSHA512(storedSalt);
+            var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+            return computedHash.SequenceEqual(storedHash);
         }
     }
+
 }
