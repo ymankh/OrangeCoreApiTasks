@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using OrangeCoreApiTasks.DTOs;
 using OrangeCoreApiTasks.Models;
 using static OrangeCoreApiTasks.Shared.Shared;
@@ -7,6 +8,7 @@ namespace OrangeCoreApiTasks.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class CategoriesController(MyDbContext context) : ControllerBase
     {
         [HttpGet]

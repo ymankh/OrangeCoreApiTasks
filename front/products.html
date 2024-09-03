@@ -73,7 +73,12 @@
         url = `https://localhost:7215/api/Categories/${category}/products`;
 
       const productContainer = document.getElementById("products-container");
-      const response = await fetch(url);
+      let token = localStorage.getItem("token");
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const data = await response.json();
       data.forEach((product) => {
         productContainer.innerHTML += `

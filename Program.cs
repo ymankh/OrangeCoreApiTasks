@@ -1,7 +1,11 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using OrangeCoreApiTasks.Models;
+using OrangeCoreApiTasks.Shared;
 using Serilog;
 
 
@@ -38,6 +42,44 @@ namespace OrangeCoreApiTasks
                     });
             });
 
+
+            // Register TokenGenerator as a singleton or transient service
+            builder.Services.AddSingleton<TokenGenerator>(); // or .AddTransient<TokenGenerator>()
+
+            // Retrieve JWT settings from configuration
+            var jwtSettings = builder.Configuration.GetSection("Jwt");
+            var key = jwtSettings.GetValue<string>("Key");
+            var issuer = jwtSettings.GetValue<string>("Issuer");
+            var audience = jwtSettings.GetValue<string>("Audience");
+
+            // Ensure values are not null
+            if (string.IsNullOrEmpty(key) || string.IsNullOrEmpty(issuer) || string.IsNullOrEmpty(audience))
+            {
+                throw new InvalidOperationException("JWT settings are not properly configured.");
+            }
+
+            // Add JWT Authentication
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    var jwtSettings = builder.Configuration.GetSection("Jwt");
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = jwtSettings["Issuer"],
+                        ValidAudience = jwtSettings["Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]))
+                    };
+                });
+
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+            });
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(
@@ -65,6 +107,7 @@ namespace OrangeCoreApiTasks
             builder.Services.AddDbContext<MyDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("YourConnectionString")));
 
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -75,6 +118,8 @@ namespace OrangeCoreApiTasks
                 app.UseDeveloperExceptionPage();
 
             }
+
+
 
             app.UseHttpsRedirection();
             app.UseStaticFiles(); // Serves static files from the wwwroot folder by default
@@ -90,8 +135,9 @@ namespace OrangeCoreApiTasks
             app.UseCors("AllowAll");
             app.UseRouting();
 
+            // Configure the HTTP request pipeline.
+            app.UseAuthentication();
             app.UseAuthorization();
-
 
             app.MapControllers();
 

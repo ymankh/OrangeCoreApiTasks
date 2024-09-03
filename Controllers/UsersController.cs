@@ -46,8 +46,5 @@ namespace OrangeCoreApiTasks.Controllers
             _db.SaveChanges();
             return NoContent();
         }
-
-
-
     }
 }

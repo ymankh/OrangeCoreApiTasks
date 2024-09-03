@@ -108,7 +108,10 @@
           body: formData,
         });
         if (response.ok) {
-          alert("Login Successful");
+          let token = await response.json();
+          localStorage.setItem("token", token.token);
+          alert("Login Successful. Redirecting to Home page");
+          window.location.href = "/index.html";
         } else {
           alert("Login Failed");
         }

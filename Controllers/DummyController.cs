@@ -67,5 +67,22 @@ namespace OrangeCoreApiTasks.Controllers
 
             return Ok(orders.ToList());
         }
+
+        [HttpGet("oddRepetition/{numberArray}")]
+        public IActionResult OddRepetition(string numberArray)
+        {
+            var map = new Dictionary<string, int>();
+            var array = numberArray.Split(' ');
+            foreach (var s in array)
+            {
+                if (!map.TryAdd(s, 1))
+                {
+                    map[s] += 1;
+                }
+            }
+
+            var oddRepeted = (from s in map where s.Value % 2 != 0 select s.Key).ToList();
+            return Ok(oddRepeted);
+        }
     }
 }
